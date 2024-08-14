@@ -29,6 +29,11 @@ const Total = ({ total }) => {
 };
 
 const Course = ({ course }) => {
+  const total = course.parts.reduce((sum, part) => {
+    console.log('what is happening', sum, part.exercises);
+    return sum + part.exercises;
+  }, 0);
+
   return (
     <div>
       <Header course={course.name} />
@@ -40,13 +45,7 @@ const Course = ({ course }) => {
         part3={course.parts[2].name}
         exercises3={course.parts[2].exercises}
       />
-      <Total
-        total={
-          course.parts[0].exercises +
-          course.parts[1].exercises +
-          course.parts[2].exercises
-        }
-      />
+      <Total total={total} />
     </div>
   );
 };
