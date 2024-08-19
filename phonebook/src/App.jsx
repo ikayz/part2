@@ -8,6 +8,32 @@ const Persons = props => {
   ));
 };
 
+const Filter = props => {
+  return (
+    <p>
+      filter shown with{' '}
+      <input value={props.filter} onChange={props.handleSearch} />
+    </p>
+  );
+};
+
+const PersonForm = props => {
+  return (
+    <form onSubmit={props.addName}>
+      <p>
+        name: <input value={props.newName} onChange={props.handleNameChange} />
+      </p>
+      <p>
+        number:{' '}
+        <input value={props.number} onChange={props.handleNumberChange} />
+      </p>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([{ name: 'Isaac Miti' }]);
   const [newName, setNewName] = useState('');
@@ -44,29 +70,21 @@ const App = () => {
   };
 
   const searchFilter = persons.filter(person =>
-    person.name.toLowerCase().startsWith(filter.toLowerCase())
+    person.name.toLowerCase().includes(filter.toLowerCase())
   );
-
-  console.log(persons[0].name);
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <p>
-        filter shown with <input value={filter} onChange={handleSearch} />
-      </p>
-      <form onSubmit={addName}>
-        <h3>add a new name</h3>
-        <p>
-          name: <input value={newName} onChange={handleNameChange} />
-        </p>
-        <p>
-          number: <input value={number} onChange={handleNumberChange} />
-        </p>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Filter filter={filter} handleSearch={handleSearch} />
+      <h3>add a new name</h3>
+      <PersonForm
+        addName={addName}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        number={number}
+        handleNumberChange={handleNumberChange}
+      />
       <h3>Numbers</h3>
       <Persons searchFilter={searchFilter} />
     </div>
