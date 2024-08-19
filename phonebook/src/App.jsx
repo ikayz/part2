@@ -1,5 +1,13 @@
 import { useState } from 'react';
 
+const Persons = props => {
+  return props.searchFilter.map((person, id) => (
+    <p key={id}>
+      {person.name} {person.number}
+    </p>
+  ));
+};
+
 const App = () => {
   const [persons, setPersons] = useState([{ name: 'Isaac Miti' }]);
   const [newName, setNewName] = useState('');
@@ -48,23 +56,19 @@ const App = () => {
         filter shown with <input value={filter} onChange={handleSearch} />
       </p>
       <form onSubmit={addName}>
-        <h2>add a new name</h2>
-        <div>
+        <h3>add a new name</h3>
+        <p>
           name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
+        </p>
+        <p>
           number: <input value={number} onChange={handleNumberChange} />
-        </div>
+        </p>
         <div>
           <button type="submit">add</button>
         </div>
       </form>
-      <h2>Numbers</h2>
-      {searchFilter.map(person => (
-        <p key={person.name}>
-          {person.name} {person.number}
-        </p>
-      ))}
+      <h3>Numbers</h3>
+      <Persons searchFilter={searchFilter} />
     </div>
   );
 };
