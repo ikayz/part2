@@ -46,12 +46,21 @@ const Notification = ({ message }) => {
   return <div className="success">{message}</div>;
 };
 
+const ErrorNotification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="error">{message}</div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [number, setNumber] = useState('');
   const [filter, setFilter] = useState('');
   const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then(initialPeople => {
@@ -89,8 +98,15 @@ const App = () => {
               setSuccessMessage(null);
             }, 5000);
             setNewName('');
-            setNewName('');
             setNumber('');
+          })
+          .catch(error => {
+            setErrorMessage(
+              `Information of ${personObject.name} has already been removed from server`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
           });
       }
     } else {
@@ -141,6 +157,7 @@ const App = () => {
       <Filter filter={filter} handleSearch={handleSearch} />
       <h3>add a new name</h3>
       <Notification message={successMessage} />
+      <ErrorNotification message={errorMessage} />
       <PersonForm
         addName={addName}
         newName={newName}
