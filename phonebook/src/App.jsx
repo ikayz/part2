@@ -38,11 +38,20 @@ const PersonForm = props => {
   );
 };
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="success">{message}</div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [number, setNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then(initialPeople => {
@@ -75,6 +84,11 @@ const App = () => {
                 person.id !== existingPerson.id ? person : returnPerson
               )
             );
+            setSuccessMessage(`Updated ${personObject.name}`);
+            setTimeout(() => {
+              setSuccessMessage(null);
+            }, 5000);
+            setNewName('');
             setNewName('');
             setNumber('');
           });
@@ -82,6 +96,10 @@ const App = () => {
     } else {
       personService.create(personObject).then(returnedPerson => {
         setPersons(persons.concat(returnedPerson));
+        setSuccessMessage(`Added ${personObject.name}`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
         setNewName('');
         setNumber('');
       });
@@ -122,6 +140,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter filter={filter} handleSearch={handleSearch} />
       <h3>add a new name</h3>
+      <Notification message={successMessage} />
       <PersonForm
         addName={addName}
         newName={newName}
