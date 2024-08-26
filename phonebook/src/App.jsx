@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import personService from './services/people';
-import axios from 'axios';
 
 const Persons = props => {
   return props.searchFilter.map((person, id) => (
     <p key={id}>
       {person.name} {person.number}
+      <button onClick={() => props.delete(person.id, person.name)}>
+        delete
+      </button>
     </p>
   ));
 };
@@ -43,8 +45,8 @@ const App = () => {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    personService.getAll().then(response => {
-      setPersons(response);
+    personService.getAll().then(initialPeople => {
+      setPersons(initialPeople);
     });
   }, []);
 
@@ -53,15 +55,18 @@ const App = () => {
     const personObject = {
       name: newName,
       number: number,
-      id: String(persons.length + 1),
+      // id: String(persons.length + 1),
     };
 
     if (persons.some(person => person.name === personObject.name)) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      setPersons(persons.concat(personObject));
-      setNewName('');
-      setNumber('');
+      personService.create(personObject).then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNumber('');
+      });
+      console.log(persons);
     }
   };
 
@@ -81,6 +86,18 @@ const App = () => {
     person.name.toLowerCase().includes(filter.toLowerCase())
   );
 
+  const deleteEntry = (id, name) => {
+    personService
+      .deleteContact(id, name)
+      .then(() => {
+        setPersons(persons.filter(n => n.id !== id));
+        console.log('Contact deleted');
+      })
+      .catch(error => {
+        console.error('Failed to delete the contact:', error);
+      });
+  };
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -94,7 +111,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons searchFilter={searchFilter} />
+      <Persons searchFilter={searchFilter} delete={deleteEntry} />
     </div>
   );
 };

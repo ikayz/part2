@@ -7,7 +7,7 @@ const getAll = () => {
 };
 
 const create = newObject => {
-  const request = axios.get(baseUrl, newObject);
+  const request = axios.post(baseUrl, newObject);
   return request.then(response => response.data);
 };
 
@@ -16,4 +16,12 @@ const update = (id, newObject) => {
   return request.then(response => response.data);
 };
 
-export default { getAll, create, update };
+const deleteContact = (id, name) => {
+  const confirmDelete = confirm(`Delete ${name}?`);
+  if (confirmDelete) {
+    return axios.delete(`${baseUrl}/${id}`);
+  }
+  return Promise.resolve();
+};
+
+export default { getAll, create, update, deleteContact };
