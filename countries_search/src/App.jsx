@@ -1,7 +1,29 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const WeatherDetails = ({ weather }) => {
+  if (!weather) return null;
+
+  const { name } = weather;
+  const { temp } = weather.main;
+  const { description, icon } = weather.weather[0];
+
+  const iconUrl = `http://openweathermap.org/img/wn/${icon}@2x.png`;
+
+  return (
+    <div>
+      <h3>Weather in {name}</h3>
+      <p>Temperature: {temp} degrees celcius</p>
+      <img src={iconUrl} alt={description} />
+      <p>Wind: {weather.wind.speed} m/s</p>
+    </div>
+  );
+};
+
 const App = () => {
+  const apiKey = import.meta.env.VITE_API_KEY;
+
+  const [weather, setWeather] = useState(null);
   const [value, setValue] = useState('');
   const [countries, setCountries] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
@@ -33,8 +55,26 @@ const App = () => {
     const filtered = countries.filter(country =>
       country.name.common.toLowerCase().includes(value.toLowerCase())
     );
+
     setFilteredCountries(filtered);
   }, [value, countries]);
+
+  useEffect(() => {
+    if (filteredCountries.length === 1) {
+      const capital = filteredCountries[0].capital[0];
+
+      axios
+        .get(
+          `http://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${apiKey}&units=metric`
+        )
+        .then(response => {
+          setWeather(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching weather data:', error);
+        });
+    }
+  }, [filteredCountries]);
 
   const handleChange = event => {
     setValue(event.target.value);
@@ -70,6 +110,8 @@ const App = () => {
         alt={`Flag of ${country.name.common}`}
         width="150"
       />
+
+      <WeatherDetails weather={weather} />
     </div>
   );
 
